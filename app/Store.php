@@ -20,13 +20,20 @@ class Store extends Model
 
     public $timestamps = false;
 
+    public function getExistStore($store) {
+        $object = $this->where('name', $store)->first();
+        return $object ?? false;
+    }
 
     public function saveToken($params) {
-        $object = $this->where('name', $params['name'])->first();
-        if ($object) {
-            return $object->update($params);
-        }
+//        $object = $this->where('name', $params['name'])->first();
+//        if ($object) {
+//            return $object->update($params);
+//        }
         return $this->create($params);
     }
 
+    public function remove($store) {
+        return $this->where('name', $store)->delete();
+    }
 }

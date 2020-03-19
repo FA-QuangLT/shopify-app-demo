@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -13,9 +14,11 @@ class WebhookController extends Controller
 
     private $data;
 
-    public function __construct()
-    {
+    private $store;
 
+    public function __construct(Store $store)
+    {
+        $this->store = $store;
     }
 
     public function verifyWebhook($data, $hmac_header) {
@@ -44,6 +47,8 @@ class WebhookController extends Controller
         $params = $request->all();
         Log::info('uninstall-app', $params);
         Redis::zadd('uninstall-app', now()->timestamp, $params['name']);
+        $request->session()->forget('store');
+        $this->store->remove($params['name']);
         return true;
     }
 }

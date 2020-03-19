@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\SpfApi\AuthApi;
 use App\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class AuthController extends Controller
 {
@@ -36,15 +38,21 @@ class AuthController extends Controller
         $verifyResult = $this->authApi->verifyRequest($params);
         if ($verifyResult) {
             $params['name'] = explode('.', $params['shop'])[0];
-            $tokenResult = $this->authApi->getAccessToken($params['name'], $params['code']);
-            if ($tokenResult['status']) {
-                $params['access_token'] = $tokenResult['data']['access_token'];
-                $params['domain'] = $params['shop'];
-                $this->store->saveToken($params);
-                session()->put('store', $params);
-                return redirect('/home');
+            $existStore = $this->store->getExistStore($params['name']);
+            if ($existStore) {
+                $params = $existStore->toArray();
+            } else {
+                $tokenResult = $this->authApi->getAccessToken($params['name'], $params['code']);
+                if ($tokenResult['status']) {
+                    $params['access_token'] = $tokenResult['data']['access_token'];
+                    $params['domain'] = $params['shop'];
+                    $this->store->saveToken($params);
+                }
             }
-            return $tokenResult;
+            Log::info('install-app', $params);
+            Redis::zadd('install-app', now()->timestamp, $params['name']);
+            session()->put('store', $params);
+            return redirect('/home');
         }
         return back()->with('error', 'request fail!');
     }
