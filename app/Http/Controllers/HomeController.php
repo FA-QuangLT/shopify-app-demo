@@ -30,8 +30,10 @@ class HomeController extends Controller
 
     public function ajaxReport(Request $request) {
         $params = $request->all();
-        (isset($params['from_date'])) ? $params['from_date'] = strtotime($params['from_date']) : $params['from_date'] = now()->toTimeString();
-        (isset($params['to_date'])) ? $params['to_date'] = strtotime($params['to_date']) : $params['to_date'] = now()->toTimeString();
+        (isset($params['from_date'])) ? $params['from_date'] = strtotime($params['from_date'] . ' 00:00:00') :
+            $params['from_date'] = now()->timestamp;
+        (isset($params['to_date'])) ? $params['to_date'] = strtotime($params['to_date'] . ' 23:59:59') :
+            $params['to_date'] = now()->timestamp;
         $installedAppList = Redis::zcount('install-app', $params['from_date'], $params['to_date']);
         $uninstallAppList = Redis::zcount('uninstall-app', $params['from_date'], $params['to_date']);
         return response()->json([
