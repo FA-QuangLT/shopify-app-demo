@@ -9,6 +9,6 @@ return [
         'read_customers',
         'read_products'
     ],
-    'redirect_url' => 'https://4fec7e2c.ngrok.io/auth'
+    'redirect_url' => env('REDRIECT_URL', 'https://463946ce.ngrok.io/auth')
 
 ];

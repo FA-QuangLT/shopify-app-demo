@@ -21,11 +21,8 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 Route::group(['middleware' => 'spf'], function () {
-
     Route::post('/logout', 'AuthController@logout')->name('logout');
-
     Route::get('/home', 'HomeController@getHome')->name('home');
-
 });
 
 
@@ -36,6 +33,10 @@ Route::group(['prefix' => 'webhook'], function () {
     Route::post('/uninstall-app', 'WebhookController@uninstallApp');
 
 });
+
+Route::get('/report', 'HomeController@getReport')->name('report');
+Route::post('/ajax-report', 'HomeController@ajaxReport')->name('ajax-report');
+
 
 Route::get('/debug-sentry', function () {
     throw new Exception('My 1 Sentry error!');

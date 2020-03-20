@@ -6,8 +6,9 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Dashboard</div>
-
                 <div class="card-body">
+                    <input type="text" class="daterange" />
+
                     <ul class="list-unstyled">
                         @foreach($products as $product)
                         <li class="media my-4">
@@ -24,4 +25,9 @@
         </div>
     </div>
 </div>
+@endsection
+@section('_js')
+    <script type="text/javascript">
+        $('.daterange').daterangepicker();
+    </script>
 @endsection
